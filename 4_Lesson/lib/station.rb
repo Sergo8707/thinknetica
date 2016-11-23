@@ -1,5 +1,3 @@
-require '../lib/trains/train'
-
 class Station
 
   attr_reader :name, :trains
@@ -11,10 +9,6 @@ class Station
 
   def train_in (train)
     @trains << train
-  end
-
-  def trains_count
-    @trains.size
   end
 
   def train_list
@@ -29,9 +23,7 @@ class Station
     if @trains.empty?
       'На станции нет поездов'
     else
-      departed_train = @trains.delete(train)
-      puts "Со станции #{@name} уехал поезд - #{departed_train}."
+      @trains.delete(train)
     end
   end
-
 end

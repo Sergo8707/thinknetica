@@ -1,9 +1,5 @@
 class CargoCarriage < Carriage
-  def initialize(type)
-    super(type)
-  end
-
-  def show_info
-    puts "данный вагон - #{type}"
+  def initialize (type = "грузовой")
+    super
   end
 end
