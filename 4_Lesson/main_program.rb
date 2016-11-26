@@ -13,25 +13,28 @@ require './lib/station'
 @stations = []
 
 def main_menu
-  puts ''
-  puts '                  --- ДОБРО ПОЖАЛОВАТЬ ---'
-  puts '            Вас приведствует компания  РЕЙСЫ-ШПАЛЫ'
-  puts '_______________________________________________________________'
-  puts ''
-  puts "*> Если вы хотите создать маршрут, пожалуйста, нажмите 'r'"
-  puts "*> Если вы хотите создать поезд, пожалуйста, нажмите 't'"
-  puts "*> Если вы хотите создать станцию, пожалуйста, нажмите 's'"
-  puts "*> Если хотите выйти, пожалуйста, нажмите 'x'"
+  menu = <<~MENU
+                      --- ДОБРО ПОЖАЛОВАТЬ ---
+                Вас приведствует компания  РЕЙСЫ-ШПАЛЫ
+    _______________________________________________________________
 
+    *> Если вы хотите создать маршрут, пожалуйста, нажмите 'r'
+    *> Если вы хотите создать поезд, пожалуйста, нажмите 't'
+    *> Если вы хотите создать станцию, пожалуйста, нажмите 's'
+    *> Если хотите выйти, пожалуйста, нажмите 'x'
+  MENU
+
+  puts menu
   input = gets.chomp
-  case
-    when input == 'r'
+
+  case input
+    when 'r'
       route_menu
-    when input == 't'
+    when 't'
       train_menu
-    when input == 's'
+    when 's'
       station_menu
-    when input == 'x'
+    when 'x'
       exit
     else
       main_menu
@@ -51,35 +54,40 @@ def route_menu
 
   @routes << Route.new(@route_start, @route_end)
 
-  puts "Ваш маршрут: #{@routes.last.all_way.join(" -> ")}"
+  puts "Ваш маршрут: #{@routes.last.all_way.join(' -> ')}"
 
   add_st
 end
 
 def add_st
-  puts ''
-  puts ''
-  puts "*> Если вы хотите добавить промежуточные станции, нажмите 'c'"
-  puts "*> Если вы хотите удалить станцию, нажмите 'd'"
-  puts "*> Если вы хотите посмотреть маршрут, нажмите 'r'"
-  puts "*> Если хотите выйти, нажмите 'x'"
+  menu_add_st = <<~MENU_ADD_ST
+
+
+    *> Если вы хотите добавить промежуточные станции, нажмите 'c'
+    *> Если вы хотите удалить станцию, нажмите 'd'
+    *> Если вы хотите посмотреть маршрут, нажмите 'r'
+    *> Если хотите выйти, нажмите 'x'
+
+  MENU_ADD_ST
+
+  puts menu_add_st
 
   input = gets.chomp
-  case
-    when input == 'c'
+  case input
+    when 'c'
       puts 'Введите промежуточную станцию'
       station = gets.chomp.to_s
       @stations << Station.new(station)
       @routes.last.add_station(station)
-      puts "Ваш маршрут: #{@routes.last.all_way.join(" -> ")}"
-    when input == 'd'
+      puts "Ваш маршрут: #{@routes.last.all_way.join(' -> ')}"
+    when 'd'
       puts 'Введите название станции которую хотите удалить'
       station_d = gets.chomp.to_s
       @routes.last.del_station(station_d)
-      puts "Ваш маршрут: #{@routes.last.all_way.join(" -> ")}"
-    when input == 'r'
-      puts "Ваш маршрут: #{@routes.last.all_way.join(" -> ")}"
-    when input == 'x'
+      puts "Ваш маршрут: #{@routes.last.all_way.join(' -> ')}"
+    when 'r'
+      puts "Ваш маршрут: #{@routes.last.all_way.join(' -> ')}"
+    when 'x'
       main_menu
     else
       add_st
@@ -89,19 +97,25 @@ end
 
 def train_menu
 
-  puts '                  --- Меню TRAIN ---'
-  puts '_______________________________________________________________'
-  puts ''
-  puts 'Введите название поезда'
+  menu_train =<<~MENU_TRAIN
+
+                      --- Меню TRAIN ---
+    _______________________________________________________________
+
+    Введите название поезда
+  MENU_TRAIN
+
+  puts menu_train
+
   name_train = gets.chomp.to_s
-  puts "Поезд будет 'пассажирский' или 'грузовой'? "
+  puts 'Поезд будет 1-пассажирский или 2-грузовой ? (Введите 1 или 2)'
 
   train_type = gets.chomp.to_s
   case train_type
-    when 'грузовой'
-      @trains << CargoTrain.new(name_train, train_type)
-    when 'пассажирский'
-      @trains << PassengerTrain.new(name_train, train_type)
+    when '1'
+      @trains << CargoTrain.new(name_train, :cargo)
+    when '2'
+      @trains << PassengerTrain.new(name_train, :passenger)
     else
       puts 'Ошибка ввода'
   end
@@ -113,47 +127,57 @@ def train_menu
 end
 
 def remote_train
-  puts ''
-  puts 'Пульт управления поездом'
-  puts ''
+
+  menu_remote_train =<<~MENU_REMOTE_TRAIN
+
+    ----------------------------------------------
+             Пульт управления поездом
+    ----------------------------------------------
+
+    *> Изменить скорость поезда'sp'"
+    *> Остановить поезд 'st'"
+    *> Прицепить вагон 'ac'"
+    *> Отцепить вагон 'dc'"
+    *> Задать маршрут 'r'"
+    *> Статус поезда's'"
+    *> Если хотите выйти, пожалуйста, нажмите 'x'"
+
+  MENU_REMOTE_TRAIN
+
+
   if @trains.size > 0
     puts 'Выберите поезд (цифрой)'
     index = 0
     @trains.collect { |x| puts "#{index += 1})  #{x.name} - #{x.type}" }
     choice = gets.chomp.to_i
     @train_choice = @trains[choice - 1]
-    puts "*> Изменить скорость поезда'sp'"
-    puts "*> Остановить поезд 'st'"
-    puts "*> Прицепить вагон 'ac'"
-    puts "*> Отцепить вагон 'dc'"
-    puts "*> Задать маршрут 'r'"
-    puts "*> Статус поезда's'"
-    puts "*> Если хотите выйти, пожалуйста, нажмите 'x'"
+
+    puts menu_remote_train
 
     input = gets.chomp
 
-    case
-      when input == 'sp'
+    case input
+      when 'sp'
         puts 'Укажите скорость поезда'
         sp = gets.chomp.to_i
         puts "Установлена скорость: #{ @train_choice.speed = sp} км./час."
-      when input == 'st'
+      when 'st'
         puts "Cкорость поезда = #{ @train_choice.stop}км./час."
-      when input == 'ac'
-        @train_choice.add_carriage(CargoCarriage.new) if @train_choice.type == 'грузовой'
-        @train_choice.add_carriage(PassengerCarriage.new) if @train_choice.type == 'пассажирский'
+      when 'ac'
+        @train_choice.add_carriage(CargoCarriage.new) if @train_choice.type == :cargo
+        @train_choice.add_carriage(PassengerCarriage.new) if @train_choice.type == :passenger
         puts "Вагон прицеплен. У поезда #{@train_choice.name} - #{@train_choice.carriages.size} вагонов"
-      when input == 'dc'
+      when 'dc'
         @train_choice.del_carriage
         puts "количество вагонов: #{ @train_choice.carriages.size}"
-      when input == 'r'
+      when 'r'
         train_route
-      when input == 's'
+      when 's'
         puts "#{@train_choice.show_train_info}"
         puts "#{@train_choice.show_next_station}"
-        puts "#{@train_choice.show_current_station}"
+        puts "#{@train_choice.current_station}"
         puts "#{@train_choice.show_prev_station}"
-      when input == 'x'
+      when 'x'
         main_menu
       else
         remote_train
@@ -170,10 +194,10 @@ def train_route
   if @routes.size > 0
     puts 'Выберите маршрут (цифрой)'
     index = 0
-    @routes.collect { |x| puts "#{index += 1}) #{x.all_way.join(" -> ")} " }
+    @routes.collect { |x| puts "#{index += 1}) #{x.all_way.join(' -> ')} " }
     choice = gets.chomp.to_i
     @train_choice.route = @routes[choice - 1]
-    puts "#{@train_choice.show_current_station}"
+    puts "#{@train_choice.current_station}"
     remote_train
   else
     puts 'Нет созданых маршрутов'
@@ -182,18 +206,23 @@ def train_route
 end
 
 def station_menu
-  puts '                  --- Меню STATION ---'
-  puts '_______________________________________________________________'
-  puts ''
-  puts "*> Если вы хотите создать станцию, пожалуйста, нажмите 'c'"
-  puts "*> Если вы хотите удалить станцию, нажмите 'd'"
-  puts "*> Если вы хотите посмотреть все станции 'o'"
-  puts "*> Управление станцией 'm'"
-  puts "*> Если хотите выйти, пожалуйста, нажмите 'x'"
+  menu_station =<<~MENU_STATION
 
+
+                      --- Меню STATION ---
+    _______________________________________________________________
+
+      *> Если вы хотите создать станцию, пожалуйста, нажмите 'c'
+      *> Если вы хотите удалить станцию, нажмите 'd'
+      *> Если вы хотите посмотреть все станции 'o'
+      *> Управление станцией 'm'
+      *> Если хотите выйти, пожалуйста, нажмите 'x'
+  MENU_STATION
+
+  puts menu_station
   input = gets.chomp
-  case
-    when input == 'c'
+  case input
+    when 'c'
       puts 'Введите название станции'
       station = gets.chomp.to_s
       if @stations.include?(station)
@@ -203,17 +232,17 @@ def station_menu
       end
 
       puts "Вы создали станцию - #{@stations.last.name}"
-    when input == 'd'
+    when 'd'
       puts 'Введите название станции которую хотите удалить'
       station_d = gets.chomp.to_s
       @routes.last.del_station(station_d)
-      puts "Ваш маршрут: #{@routes.last.all_way.join(" -> ")}"
-    when input == 'o'
+      puts "Ваш маршрут: #{@routes.last.all_way.join(' -> ')}"
+    when 'o'
       index = 0
       @stations.collect { |x| puts "#{index += 1}) #{x.name}" }
-    when input == 'm'
+    when 'm'
       remote_station
-    when input == 'x'
+    when 'x'
       main_menu
     else
       station_menu
@@ -224,6 +253,20 @@ end
 
 def remote_station
 
+  menu_remote_station = <<~MENU_REMOTE_STATION
+
+     ----------------------------------------------
+               Пульт управления станцией
+     ----------------------------------------------
+
+    *> Если вы хотите поместить поезд на станцию, пожалуйста, нажмите 'a'
+    *> Посмотреть список поездов на станции, нажмите 'l'
+    *> Посмотреть список поездов на станции по типу, нажмите 'o'
+    *> Отправить поезд со станции 'd'
+    *> Если хотите выйти, пожалуйста, нажмите 'x'
+
+  MENU_REMOTE_STATION
+
   if @stations.size > 0
     puts 'Выберите станцию (цифрой)'
     index = 0
@@ -231,30 +274,25 @@ def remote_station
     choice = gets.chomp.to_i
     @station_choice = @stations[choice - 1]
 
-    puts "*> Если вы хотите поместить поезд на станцию, пожалуйста, нажмите 'a'"
-    puts "*> Посмотреть список поездов на станции, нажмите 'l'"
-    puts "*> Посмотреть список поездов на станции по типу, нажмите 'o'"
-    puts "*> Отправить поезд со станции 'd'"
-    puts "*> Если хотите выйти, пожалуйста, нажмите 'x'"
+
+    puts menu_remote_station
 
     input = gets.chomp
-    case
-      when input == 'a'
-        # Тут я немного не понял. Помещать поезд можно любой и когда захочешь?
-        # Или только когда у конкретного поезда который идет по маршруту настала эта станция?
+    case input
+      when 'a'
         @station_choice.train_in(@train_choice)
-      when input == 'l'
+      when 'l'
         @station_choice.train_list
-      when input == 'o'
+      when 'o'
         puts 'По какому типу смотрим (грузовый или пассажирские)'
         train_type = gets.chomp.to_s
         @station_choice.trains_type(train_type)
-      when input == 'd'
+      when 'd'
         puts 'Напишите имя поезда который хотите отправить'
         train_del = gets.chomp.to_s
         puts "Со станции #{@station_choice.name} уехал поезд - #{@train_choice.name}."
         @station_choice.train_go(train_del)
-      when input == 'x'
+      when 'x'
         main_menu
       else
         remote_station

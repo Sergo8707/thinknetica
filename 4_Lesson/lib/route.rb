@@ -15,6 +15,6 @@ class Route
   end
 
   def show_stations
-    @all_way[-2]
+    @all_way
   end
 end

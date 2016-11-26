@@ -1,5 +1,5 @@
 class PassengerCarriage < Carriage
-  def initialize (type = "пассажирский")
+  def initialize (type = :passenger)
     super
   end
 end
