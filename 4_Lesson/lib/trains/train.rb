@@ -51,7 +51,23 @@ class Train
     if @route
       puts "Текущая станция: #{@current_station}"
     else
-      puts "маршрут не задан"
+      puts 'маршрут не задан'
+    end
+  end
+
+  def to_station(station)
+    if @route.all_way.include?(station)
+      index_station = @route.all_way.index(station)
+      @current_station = @route.all_way[index_station]
+
+      @current_station.train_go(self)
+      index_station += 1
+      @current_station = @route.all_way[index_station]
+      @current_station.train_in(self)
+
+      puts "Поезд переместился на станцию #{@current_station}"
+    else
+      puts 'Такой станции нет!'
     end
   end
 
@@ -65,16 +81,6 @@ class Train
     index_station = @route.all_way.index(@current_station)
     previous_station = @route.all_way[index_station - 1]
     puts "Предыдущая станция: #{previous_station}" if index_station > 0
-  end
-
-  def to_station(station)
-    if @route.all_way.include?(station)
-      index_station = @route.all_way.index(station)
-      @current_station = @route.all_way[index_station]
-      puts "Поезд переместился на станцию #{@current_station}"
-    else
-      puts "Такой станции нет!"
-    end
   end
 
   def show_train_info

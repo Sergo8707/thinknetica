@@ -1,5 +1,5 @@
 class CargoTrain < Train
-  def initialize(name, type = "грузовой")
+  def initialize(name, type = :cargo)
     super
   end
 end

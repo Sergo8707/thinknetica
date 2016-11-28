@@ -15,6 +15,6 @@ class Route
   end
 
   def show_stations
-    @all_way
+    @all_way.each { |station| puts "#{station}"}
   end
 end
