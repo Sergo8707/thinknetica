@@ -102,10 +102,14 @@ def train_menu
                       --- Меню TRAIN ---
     _______________________________________________________________
 
-    Введите название поезда
+    Введите номер поезда
   MENU_TRAIN
 
   puts menu_train
+
+  number = gets.chomp.to_i
+
+  puts 'Введите название поезда'
 
   name_train = gets.chomp.to_s
   puts 'Поезд будет 1-пассажирский или 2-грузовой ? (Введите 1 или 2)'
@@ -113,9 +117,9 @@ def train_menu
   train_type = gets.chomp.to_s
   case train_type
     when '1'
-      @trains << CargoTrain.new(name_train, :cargo)
+      @trains << CargoTrain.new(number, name_train, :cargo)
     when '2'
-      @trains << PassengerTrain.new(name_train, :passenger)
+      @trains << PassengerTrain.new(number, name_train, :passenger)
     else
       puts 'Ошибка ввода'
   end

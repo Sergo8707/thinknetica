@@ -1,14 +1,28 @@
+require_relative 'company_name'
+require_relative 'instance_counter'
+
 class Train
+
+  include CompanyName
+  include InstanceCounter
 
   attr_accessor :speed
   attr_reader :name, :type, :carriages
 
-  def initialize(name, type)
-    @number = rand(1..100)
+  @@trains = {}
+
+  def self.find(number)
+    @@trains[number]
+  end
+
+  def initialize(number, name, type)
+    @number = number
     @name = name
     @type = type
     @speed = 0
     @carriages = []
+    @@trains[number] = self
+    self.register_instance
   end
 
   def stop
