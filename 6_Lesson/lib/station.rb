@@ -1,5 +1,7 @@
 class Station
 
+  STATION_FORMAT = /^[а-яa-zA-ЯA-Z0-9]/i
+
   attr_reader :name, :trains
 
   @@all_stations = []
@@ -11,6 +13,7 @@ class Station
   def initialize (name)
     @name = name
     @trains = []
+    validate!
     @@all_stations << self
   end
 
@@ -32,5 +35,21 @@ class Station
     else
       @trains.delete(train)
     end
+  end
+
+  def valid?
+    validate!
+  rescue
+    false
+  end
+
+  private
+
+  def validate!
+    raise 'Название станции не может быть пустым!' if name.empty?
+    raise 'Название станции должно быть длинее 3 символов' if name.to_s.length < 3
+    raise 'Название станции не должно быть длинее 16 символов' if name.to_s.length > 16
+    raise 'Название станции не отвечает формату' if name !~ STATION_FORMAT
+    true
   end
 end

@@ -1,6 +1,6 @@
 require './lib/trains/carriages/carriage'
 require './lib/trains/carriages/cargo_carriage'
-require './lib/trains/carriages/passanger_carriage'
+require './lib/trains/carriages/passenger_carriage'
 require './lib/trains/train'
 require './lib/trains/cargo_train'
 require './lib/trains/passenger_train'
@@ -46,13 +46,19 @@ def route_menu
   puts '_______________________________________________________________'
   puts ''
   puts 'Введите начальную станцию'
-  @route_start = gets.chomp.to_s
-  @stations << Station.new(@route_start)
-  puts 'Введите конечную станцию'
-  @route_end = gets.chomp.to_s
-  @stations << Station.new(@route_end)
+  begin
+    @route_start = gets.chomp.to_s
+    @stations << Station.new(@route_start)
+    puts 'Введите конечную станцию'
+    @route_end = gets.chomp.to_s
+    @stations << Station.new(@route_end)
 
-  @routes << Route.new(@route_start, @route_end)
+    @routes << Route.new(@route_start, @route_end)
+
+  rescue RuntimeError => e
+    puts "#{e}"
+    retry
+  end
 
   puts "Ваш маршрут: #{@routes.last.all_way.join(' -> ')}"
 
@@ -75,10 +81,15 @@ def add_st
   input = gets.chomp
   case input
     when 'c'
-      puts 'Введите промежуточную станцию'
-      station = gets.chomp.to_s
-      @stations << Station.new(station)
-      @routes.last.add_station(station)
+      begin
+        puts 'Введите промежуточную станцию'
+        station = gets.chomp.to_s
+        @stations << Station.new(station)
+        @routes.last.add_station(station)
+      rescue RuntimeError => e
+        puts "#{e}"
+        retry
+      end
       puts "Ваш маршрут: #{@routes.last.all_way.join(' -> ')}"
     when 'd'
       puts 'Введите название станции которую хотите удалить'
@@ -102,29 +113,42 @@ def train_menu
                       --- Меню TRAIN ---
     _______________________________________________________________
 
-    Введите номер поезда
+
   MENU_TRAIN
 
   puts menu_train
 
-  number = gets.chomp.to_i
+  begin
 
-  puts 'Введите название поезда'
+    puts 'Введите номер поезда'
 
-  name_train = gets.chomp.to_s
-  puts 'Поезд будет 1-пассажирский или 2-грузовой ? (Введите 1 или 2)'
+    number = gets.chomp.to_s
 
-  train_type = gets.chomp.to_s
-  case train_type
-    when '1'
-      @trains << CargoTrain.new(number, name_train, :cargo)
-    when '2'
-      @trains << PassengerTrain.new(number, name_train, :passenger)
-    else
-      puts 'Ошибка ввода'
+    puts 'Введите название поезда'
+
+    name_train = gets.chomp.to_s
+    puts 'Поезд будет 1-грузовой или 2-пассажирский ? (Введите 1 или 2)'
+
+    train_type = gets.chomp.to_s
+
+
+    case train_type
+      when '1'
+        @trains << CargoTrain.new(number, name_train, :cargo)
+
+      when '2'
+        @trains << PassengerTrain.new(number, name_train, :passenger)
+      else
+        @trains << Train.new(number, name_train, train_type)
+    end
+
+  rescue RuntimeError => e
+    puts "#{e}"
+    retry
   end
 
   puts 'Вы создали поезд'
+
   puts @trains.last.show_train_info
 
   remote_train
@@ -226,14 +250,19 @@ def station_menu
   input = gets.chomp
   case input
     when 'c'
-      puts 'Введите название станции'
-      station = gets.chomp.to_s
-      if @stations.include?(station)
-        puts 'такая станция уже есть'
-      else
-        @stations << Station.new(station)
+      begin
+        puts 'Введите название станции'
+        station = gets.chomp.to_s
+        if @stations.include?(station)
+          puts 'такая станция уже есть'
+        else
+          @stations << Station.new(station)
+        end
+        station.valid?
+      rescue RuntimeError => e
+        puts "#{e}"
+        retry
       end
-
       puts "Вы создали станцию - #{@stations.last.name}"
     when 'd'
       puts 'Введите название станции которую хотите удалить'

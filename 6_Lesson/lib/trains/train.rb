@@ -7,7 +7,11 @@ class Train
   include InstanceCounter
 
   attr_accessor :speed
-  attr_reader :name, :type, :carriages
+  attr_reader :name, :type, :carriages, :number
+
+  NUMBER_FORMAT = /^([a-z]|\d){3}-?([a-z]{2}|\d{2})$/i
+
+  NAME_FORMAT = /\A[a-zа-яA-ZА-Я0-9_]+\z/
 
   @@trains = {}
 
@@ -21,6 +25,7 @@ class Train
     @type = type
     @speed = 0
     @carriages = []
+    validate!
     @@trains[number] = self
     self.register_instance
   end
@@ -102,7 +107,29 @@ class Train
     puts "номер - #{@number}; имя - #{@name}; тип - #{@type}; количество вагонов: #{@carriages.size}"
   end
 
+  def valid?
+    validate!
+  rescue
+    false
+  end
+
   protected
+
+
+  def validate!
+    raise 'Имя поезда не должно быть пустим' if name.empty?
+    raise 'Номер поезда не может быть пустим' if number.nil?
+    raise 'Номер должнен быть длинее 5 символов' if number.to_s.length < 3
+    raise 'Имя должно быть длинее 6 символов' if name.to_s.length < 6
+    raise 'Номер не должнен быть длинее 6 символов' if number.to_s.length > 7
+    raise 'Имя не должно быть длинее 12 символов' if name.to_s.length > 12
+    raise 'Номер поезда не отвечает формату, нужный формат(XXX-XX)' if number !~ NUMBER_FORMAT
+    raise 'Имя не отвечает формату' if name !~ NAME_FORMAT
+    raise 'Тип поезда не может быть nil!' if type.nil?
+    raise 'Тип поезда должен быть Грузовой или Пассажирский' if type != :cargo && type != :passenger
+    true
+  end
+
 
   # доступ только из подкласов
   attr_writer :carriages

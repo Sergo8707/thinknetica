@@ -2,7 +2,7 @@ module InstanceCounter
 
   def self.included(base)
     base.extend ClassMethods
-    base.include InstanceMethods
+    base.send :include, InstanceMethods
   end
 
   module ClassMethods
@@ -10,7 +10,6 @@ module InstanceCounter
     def instances
       self.instance
     end
-
 
     protected
 
@@ -23,8 +22,6 @@ module InstanceCounter
   end
 
   module InstanceMethods
-
-    private
 
     def register_instance
       self.class.send(:add)

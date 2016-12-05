@@ -4,6 +4,7 @@ class Route
 
   def initialize (start_station, end_station)
     @all_way = [start_station, end_station]
+    validate!
   end
 
   def add_station (station)
@@ -16,5 +17,18 @@ class Route
 
   def show_stations
     @all_way.each { |station| puts station }
+  end
+
+  def valid?
+    validate!
+  rescue
+    false
+  end
+
+  protected
+
+  def validate!
+    raise 'Маршрут не может быть пустым' if all_way.empty?
+    true
   end
 end
