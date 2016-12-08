@@ -129,15 +129,15 @@ def train_menu
     name_train = gets.chomp.to_s
     puts 'Поезд будет 1-грузовой или 2-пассажирский ? (Введите 1 или 2)'
 
-    train_type = gets.chomp.to_s
+    train_type = gets.to_i
 
 
     case train_type
-      when '1'
-        @trains << CargoTrain.new(number, name_train, :cargo)
+      when 1
+        @trains << CargoTrain.new(number, name_train)
 
-      when '2'
-        @trains << PassengerTrain.new(number, name_train, :passenger)
+      when 2
+        @trains << PassengerTrain.new(number, name_train)
       else
         @trains << Train.new(number, name_train, train_type)
     end

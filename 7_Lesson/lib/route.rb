@@ -1,4 +1,8 @@
+require_relative './trains/validator'
+
 class Route
+
+  include Validator
 
   attr_reader :all_way
 
@@ -17,12 +21,6 @@ class Route
 
   def show_stations
     @all_way.each { |station| puts station }
-  end
-
-  def valid?
-    validate!
-  rescue
-    false
   end
 
   protected

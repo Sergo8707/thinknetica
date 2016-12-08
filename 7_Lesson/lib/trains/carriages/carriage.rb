@@ -1,8 +1,10 @@
 require_relative '../company_name'
+require_relative '../validator'
 
 class Carriage
 
   include CompanyName
+  include Validator
 
   attr_reader :type
 
@@ -13,12 +15,6 @@ class Carriage
 
   def carriage_type
       puts "Этот вагон #{type}"
-  end
-
-  def valid?
-    validate!
-  rescue
-    false
   end
 
   def validate!

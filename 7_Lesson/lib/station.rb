@@ -1,4 +1,8 @@
+require_relative './trains/validator'
+
 class Station
+
+  include Validator
 
   STATION_FORMAT = /^[а-яa-zA-ЯA-Z0-9]/i
 
@@ -35,12 +39,6 @@ class Station
     else
       @trains.delete(train)
     end
-  end
-
-  def valid?
-    validate!
-  rescue
-    false
   end
 
   private

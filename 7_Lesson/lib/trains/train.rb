@@ -1,10 +1,15 @@
 require_relative 'company_name'
 require_relative 'instance_counter'
+require_relative 'validator'
+
+
 
 class Train
 
   include CompanyName
   include InstanceCounter
+  include Validator
+
 
   attr_accessor :speed
   attr_reader :name, :type, :carriages, :number
@@ -105,12 +110,6 @@ class Train
 
   def show_train_info
     puts "номер - #{@number}; имя - #{@name}; тип - #{@type}; количество вагонов: #{@carriages.size}"
-  end
-
-  def valid?
-    validate!
-  rescue
-    false
   end
 
   protected
