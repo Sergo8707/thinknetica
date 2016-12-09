@@ -25,8 +25,12 @@ class Station
     @trains << train
   end
 
-  def train_list
-    @trains.each { |train| train.show_train_info }
+  def train_list(&block)
+    if @trains.size > 0
+      @trains.each { |train| block.call(train) }
+    else
+      puts 'На станции нет поездов'
+    end
   end
 
   def trains_type(type)

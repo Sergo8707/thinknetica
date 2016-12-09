@@ -3,7 +3,6 @@ require_relative 'instance_counter'
 require_relative 'validator'
 
 
-
 class Train
 
   include CompanyName
@@ -41,6 +40,15 @@ class Train
 
   def carriage_naw
     @carriages
+  end
+
+  def show_carriage(&block)
+    if @carriages.size > 0
+      puts 'Вагоны поезда:'
+      @carriages.each { |carriage| block.call(carriage) }
+    else
+      puts 'У поезда нет вагонов'
+    end
   end
 
   def add_carriage(carriage)

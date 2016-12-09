@@ -6,9 +6,10 @@ class Carriage
   include CompanyName
   include Validator
 
-  attr_reader :type
+  attr_reader :type, :place
 
-  def initialize(type)
+  def initialize(place, type)
+    @place = place
     @type = type
     validate!
   end

@@ -191,9 +191,19 @@ def remote_train
       when 'st'
         puts "Cкорость поезда = #{ @train_choice.stop}км./час."
       when 'ac'
-        @train_choice.add_carriage(CargoCarriage.new) if @train_choice.type == :cargo
-        @train_choice.add_carriage(PassengerCarriage.new) if @train_choice.type == :passenger
-        puts "Вагон прицеплен. У поезда #{@train_choice.name} - #{@train_choice.carriages.size} вагонов"
+        if @train_choice.type == :cargo
+          puts 'Укажите объем вагона:'
+          volume = gets.to_i
+          @train_choice.add_carriage(CargoCarriage.new(volume))
+          puts "Вагон прицеплен. У поезда #{@train_choice.name} - #{@train_choice.carriages.size} вагонов"
+        elsif @train_choice.type == :passenger
+          puts 'Укажите общее количество мест в вагоне:'
+          seats = gets.to_i
+          @train_choice.add_carriage(PassengerCarriage.new(seats))
+          puts "Вагон прицеплен. У поезда #{@train_choice.name} - #{@train_choice.carriages.size} вагонов"
+        else
+          puts 'Невозможно прицепить вагон'
+        end
       when 'dc'
         @train_choice.del_carriage
         puts "количество вагонов: #{ @train_choice.carriages.size}"
