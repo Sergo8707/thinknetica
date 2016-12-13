@@ -6,14 +6,20 @@ class CargoCarriage < Carriage
   end
 
   def take_volume(volume)
-    @volume_count += volume if @total_volume > @volume_count
+    if @total_volume > @volume_count
+      if volume > @total_volume - @volume_count
+        puts 'Не влезает'
+      else
+        @volume_count += volume
+      end
+    end
   end
 
   def taken_volume
-    @volume_count
+    puts "Занимаемый объем: #{@volume_count}"
   end
 
   def free_volume
-    @total_volume - @volume_count
+    puts "Свободный объем: #{@total_volume - @volume_count}"
   end
 end

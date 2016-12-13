@@ -166,6 +166,7 @@ def remote_train
     *> Остановить поезд 'st'
     *> Прицепить вагон 'ac'
     *> Отцепить вагон 'dc'
+    *> Заполнить вагон 'fc'
     *> Задать маршрут 'r'
     *> Статус поезда 's'
     *> Если хотите выйти, пожалуйста, нажмите 'x'
@@ -203,6 +204,38 @@ def remote_train
           puts "Вагон прицеплен. У поезда #{@train_choice.name} - #{@train_choice.carriages.size} вагонов"
         else
           puts 'Невозможно прицепить вагон'
+        end
+      when 'fc'
+        if @train_choice.carriages.size != 0
+          puts 'Выберите вагон'
+          index = 0
+          if @train_choice.type == :cargo
+            @train_choice.show_carriage { |carriage| puts "#{index += 1} - вагон - объем: #{carriage.place}" }
+            cargo_choice = gets.chomp.to_i
+            if cargo_choice <= @train_choice.carriages.size
+              puts 'Укажите объем, который хотите занять: '
+              volume = gets.chomp.to_i
+              @train_choice.carriages[cargo_choice - 1].take_volume(volume)
+              @train_choice.carriages[cargo_choice - 1].free_volume
+            else
+              puts 'Нет такого вагона'
+            end
+          elsif @train_choice.type == :passenger
+            @train_choice.show_carriage do |carriage|
+              puts "#{index += 1} - вагон - мест: #{carriage.place}"
+              puts "#{carriage.free_seats}"
+              puts
+            end
+            pass_choice = gets.chomp.to_i
+            if pass_choice <= @train_choice.carriages.size
+              @train_choice.carriages[pass_choice - 1].take_seat
+              @train_choice.carriages[pass_choice - 1].free_seats
+            else
+              puts 'Нет такого вагона'
+            end
+          end
+        else
+          puts 'Сначала прицепите вагоны'
         end
       when 'dc'
         @train_choice.del_carriage

@@ -7,13 +7,14 @@ class PassengerCarriage < Carriage
 
   def take_seat
     @seats_count += 1 if @seats_total > @seats_count
+    puts 'Занято одно место'
   end
 
   def busy_place
-    @seats_count
+    puts "занятых мест: #{@seats_count}"
   end
 
   def free_seats
-    @seats_total - @seats_count
+    puts "свободных мест: #{@seats_total - @seats_count}"
   end
 end
