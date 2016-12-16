@@ -2,13 +2,10 @@ require_relative 'company_name'
 require_relative 'instance_counter'
 require_relative 'validator'
 
-
 class Train
-
   include CompanyName
   include InstanceCounter
   include Validator
-
 
   attr_accessor :speed
   attr_reader :name, :type, :carriages, :number
@@ -31,7 +28,7 @@ class Train
     @carriages = []
     validate!
     @@trains[number] = self
-    self.register_instance
+    register_instance
   end
 
   def stop
@@ -42,10 +39,10 @@ class Train
     @carriages
   end
 
-  def show_carriage(&block)
-    if @carriages.size > 0
+  def show_carriage
+    if !@carriages.empty?
       puts 'Вагоны поезда:'
-      @carriages.each { |carriage| block.call(carriage) }
+      @carriages.each { |carriage| yield(carriage) }
     else
       puts 'У поезда нет вагонов'
     end
@@ -53,11 +50,7 @@ class Train
 
   def add_carriage(carriage)
     if @speed.zero?
-      if carriage.type == self.type
-        @carriages << carriage
-      else
-        puts 'Нельзя присоединить данный вагон к этому типу поезда'
-      end
+      @carriages << carriage
     else
       'Нужно остановиться чтобы прицепить вагон'
     end
@@ -65,8 +58,8 @@ class Train
   end
 
   def del_carriage
-    if @speed == 0
-      @carriages.size > 0 ? @carriages.pop : 'Вагонов больне нет'
+    if @speed.zero?
+      !@carriages.empty? ? @carriages.pop : 'Вагонов больне нет'
     else
       'Нужно остановиться чтобы отцепить вагон'
     end
@@ -117,26 +110,10 @@ class Train
   end
 
   def show_train_info
-    puts "номер - #{@number}; имя - #{@name}; тип - #{@type}; количество вагонов: #{@carriages.size}"
+    puts "номер - #{@number}; имя - #{@name}; тип - #{@type}; вагонов: #{@carriages.size}"
   end
 
   protected
-
-
-  def validate!
-    raise 'Имя поезда не должно быть пустим' if name.empty?
-    raise 'Номер поезда не может быть пустим' if number.nil?
-    raise 'Номер должнен быть длинее 5 символов' if number.to_s.length < 3
-    raise 'Имя должно быть длинее 6 символов' if name.to_s.length < 6
-    raise 'Номер не должнен быть длинее 6 символов' if number.to_s.length > 7
-    raise 'Имя не должно быть длинее 12 символов' if name.to_s.length > 12
-    raise 'Номер поезда не отвечает формату, нужный формат(XXX-XX)' if number !~ NUMBER_FORMAT
-    raise 'Имя не отвечает формату' if name !~ NAME_FORMAT
-    raise 'Тип поезда не может быть nil!' if type.nil?
-    raise 'Тип поезда должен быть Грузовой или Пассажирский' if type != :cargo && type != :passenger
-    true
-  end
-
 
   # доступ только из подкласов
   attr_writer :carriages
@@ -145,4 +122,16 @@ class Train
     puts "carriages: #{@carriages.size}"
   end
 
+  def validate!
+    raise 'Имя поезда не должно быть пустим' if name.empty?
+    raise 'Номер поезда не может быть пустим' if number.nil?
+    raise 'Номер должнен быть длинее 5 символов' if number.to_s.length < 3
+    raise 'Имя должно быть длинее 6 символов' if name.to_s.length < 6
+    raise 'Номер не должнен быть длинее 6 символов' if number.to_s.length > 7
+    raise 'Номер не отвечает формату (XXX-XX)' if number !~ NUMBER_FORMAT
+    raise 'Имя не отвечает формату' if name !~ NAME_FORMAT
+    raise 'Тип поезда не может быть nil!' if type.nil?
+    raise 'Поезду не задан тип' if type != :cargo && type != :passenger
+    true
+  end
 end

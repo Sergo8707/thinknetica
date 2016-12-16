@@ -1,16 +1,12 @@
 class CargoCarriage < Carriage
-  def initialize (total_volume, type = :cargo)
+  def initialize(total_volume)
     @total_volume = total_volume.to_i
     @volume_count = 0
     super
   end
 
   def take_volume(volume)
-      if volume > @total_volume - @volume_count
-        puts 'Не влезает'
-      else
-        @volume_count += volume
-      end
+    @volume_count += volume if volume > @total_volume - @volume_count
   end
 
   def show_taken_volume

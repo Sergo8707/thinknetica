@@ -1,13 +1,12 @@
 class PassengerCarriage < Carriage
-  def initialize (seats_total, type = :passenger)
+  def initialize(seats_total)
     @seats_total = seats_total.to_i
     @seats_count = 0
     super
   end
 
   def take_seat
-    @seats_count += 1 if @seats_total > @seats_count
-    puts 'Занято одно место'
+    @seats_count += 1 if @seats_count < @seats_total
   end
 
   def show_busy_places

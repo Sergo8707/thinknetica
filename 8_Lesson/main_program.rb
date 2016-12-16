@@ -192,51 +192,9 @@ def remote_train
       when 'st'
         puts "Cкорость поезда = #{ @train_choice.stop}км./час."
       when 'ac'
-        if @train_choice.type == :cargo
-          puts 'Укажите объем вагона:'
-          volume = gets.to_i
-          @train_choice.add_carriage(CargoCarriage.new(volume))
-          puts "Вагон прицеплен. У поезда #{@train_choice.name} - #{@train_choice.carriages.size} вагонов"
-        elsif @train_choice.type == :passenger
-          puts 'Укажите общее количество мест в вагоне:'
-          seats = gets.to_i
-          @train_choice.add_carriage(PassengerCarriage.new(seats))
-          puts "Вагон прицеплен. У поезда #{@train_choice.name} - #{@train_choice.carriages.size} вагонов"
-        else
-          puts 'Невозможно прицепить вагон'
-        end
+        add_wagon
       when 'fc'
-        if @train_choice.carriages.size != 0
-          puts 'Выберите вагон'
-          index = 0
-          if @train_choice.type == :cargo
-            @train_choice.show_carriage { |carriage| puts "#{index += 1} - вагон - объем: #{carriage.place}" }
-            cargo_choice = gets.chomp.to_i
-            if cargo_choice <= @train_choice.carriages.size
-              puts 'Укажите объем, который хотите занять: '
-              volume = gets.chomp.to_i
-              @train_choice.carriages[cargo_choice - 1].take_volume(volume)
-              @train_choice.carriages[cargo_choice - 1].free_volume
-            else
-              puts 'Нет такого вагона'
-            end
-          elsif @train_choice.type == :passenger
-            @train_choice.show_carriage do |carriage|
-              puts "#{index += 1} - вагон - мест: #{carriage.place}"
-              puts "#{carriage.free_seats}"
-              puts
-            end
-            pass_choice = gets.chomp.to_i
-            if pass_choice <= @train_choice.carriages.size
-              @train_choice.carriages[pass_choice - 1].take_seat
-              @train_choice.carriages[pass_choice - 1].free_seats
-            else
-              puts 'Нет такого вагона'
-            end
-          end
-        else
-          puts 'Сначала прицепите вагоны'
-        end
+        fill_carriage
       when 'dc'
         @train_choice.del_carriage
         puts "количество вагонов: #{ @train_choice.carriages.size}"
@@ -257,6 +215,58 @@ def remote_train
     puts 'Поезд не создан'
   end
 
+  remote_train
+end
+
+def add_wagon
+  if @train_choice.type == :cargo
+    puts 'Укажите объем вагона:'
+    volume = gets.to_i
+    @train_choice.add_carriage(CargoCarriage.new(volume))
+    puts "Вагон прицеплен. У поезда #{@train_choice.name} - #{@train_choice.carriages.size} вагонов"
+  elsif @train_choice.type == :passenger
+    puts 'Укажите общее количество мест в вагоне:'
+    seats = gets.to_i
+    @train_choice.add_carriage(PassengerCarriage.new(seats))
+    puts "Вагон прицеплен. У поезда #{@train_choice.name} - #{@train_choice.carriages.size} вагонов"
+  else
+    puts 'Невозможно прицепить вагон'
+  end
+  remote_train
+end
+
+def fill_carriage
+  if @train_choice.carriages.size != 0
+    puts 'Выберите вагон'
+    index = 0
+    if @train_choice.type == :cargo
+      @train_choice.show_carriage { |carriage| puts "#{index += 1} - вагон - объем: #{carriage.place}" }
+      cargo_choice = gets.chomp.to_i
+      if cargo_choice <= @train_choice.carriages.size
+        puts 'Укажите объем, который хотите занять: '
+        volume = gets.chomp.to_i
+        @train_choice.carriages[cargo_choice - 1].take_volume(volume)
+        @train_choice.carriages[cargo_choice - 1].free_volume
+      else
+        puts 'Нет такого вагона'
+      end
+    elsif @train_choice.type == :passenger
+      @train_choice.show_carriage do |carriage|
+        puts "#{index += 1} - вагон - мест: #{carriage.place}"
+        puts "#{carriage.free_seats}"
+        puts
+      end
+      pass_choice = gets.chomp.to_i
+      if pass_choice <= @train_choice.carriages.size
+        @train_choice.carriages[pass_choice - 1].take_seat
+        @train_choice.carriages[pass_choice - 1].free_seats
+      else
+        puts 'Нет такого вагона'
+      end
+    end
+  else
+    puts 'Сначала прицепите вагоны'
+  end
   remote_train
 end
 

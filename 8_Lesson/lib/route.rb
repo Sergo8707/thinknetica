@@ -1,21 +1,20 @@
 require_relative 'trains/validator'
 
 class Route
-
   include Validator
 
   attr_reader :all_way
 
-  def initialize (start_station, end_station)
+  def initialize(start_station, end_station)
     @all_way = [start_station, end_station]
     validate!
   end
 
-  def add_station (station)
+  def add_station(station)
     @all_way.insert(-2, station)
   end
 
-  def del_station (station)
+  def del_station(station)
     @all_way.delete(station)
   end
 
