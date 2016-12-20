@@ -1,9 +1,12 @@
-require_relative 'trains/validator'
+require_relative 'trains/modules/validation'
 
 class Route
-  include Validator
+  include Validation
 
   attr_reader :all_way
+
+  validate :start_station, :type
+  validate :end_station, :type
 
   def initialize(start_station, end_station)
     @all_way = [start_station, end_station]
@@ -20,12 +23,5 @@ class Route
 
   def show_stations
     @all_way.each { |station| puts station }
-  end
-
-  protected
-
-  def validate!
-    raise 'Маршрут не может быть пустым' if all_way.empty?
-    true
   end
 end

@@ -1,9 +1,7 @@
-require_relative '../company_name'
-require_relative '../validator'
+require_relative '../modules/company_name'
 
 class Carriage
   include CompanyName
-  include Validator
 
   attr_reader :place
 

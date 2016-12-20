@@ -18,9 +18,9 @@ def main_menu
                 Вас приведствует компания  РЕЙСЫ-ШПАЛЫ
     _______________________________________________________________
 
-    *> Если вы хотите создать маршрут, пожалуйста, нажмите 'r'
-    *> Если вы хотите создать поезд, пожалуйста, нажмите 't'
-    *> Если вы хотите создать станцию, пожалуйста, нажмите 's'
+    *> Если вы хотите создать маршрут, пожалуйста, нажмите - r
+    *> Если вы хотите создать поезд, пожалуйста, нажмите - t
+    *> Если вы хотите создать станцию, пожалуйста, нажмите - s
     *> Если хотите выйти, пожалуйста, нажмите 'x'
   MENU
 
@@ -56,7 +56,7 @@ def route_menu
     @routes << Route.new(@route_start, @route_end)
 
   rescue => e
-    puts "#{e}"
+    puts e.message
     retry
   end
 
@@ -69,10 +69,10 @@ def add_st
   menu_add_st = <<~MENU_ADD_ST
 
 
-    *> Если вы хотите добавить промежуточные станции, нажмите 'c'
-    *> Если вы хотите удалить станцию, нажмите 'd'
-    *> Если вы хотите посмотреть маршрут, нажмите 'r'
-    *> Если хотите выйти, нажмите 'x'
+    *> Если вы хотите добавить промежуточные станции, нажмите - c
+    *> Если вы хотите удалить станцию, нажмите - d
+    *> Если вы хотите посмотреть маршрут, нажмите - r
+    *> Если хотите выйти, нажмите - x
 
   MENU_ADD_ST
 
@@ -87,7 +87,7 @@ def add_st
         @stations << Station.new(station)
         @routes.last.add_station(station)
       rescue => e
-        puts "#{e}"
+        puts e.message
         retry
       end
       puts "Ваш маршрут: #{@routes.last.all_way.join(' -> ')}"
@@ -127,10 +127,10 @@ def train_menu
     puts 'Введите название поезда'
 
     name_train = gets.chomp.to_s
+
     puts 'Поезд будет 1-грузовой или 2-пассажирский ? (Введите 1 или 2)'
 
     train_type = gets.to_i
-
 
     case train_type
       when 1
@@ -139,11 +139,12 @@ def train_menu
       when 2
         @trains << PassengerTrain.new(number, name_train)
       else
-        @trains << Train.new(number, name_train, train_type)
+        puts 'Неверный тип поезда!'
+        menu_train
     end
 
   rescue => e
-    puts "#{e}"
+    puts e.message
     retry
   end
 
@@ -162,14 +163,14 @@ def remote_train
              Пульт управления поездом
     ----------------------------------------------
 
-    *> Изменить скорость поезда'sp'
-    *> Остановить поезд 'st'
-    *> Прицепить вагон 'ac'
-    *> Отцепить вагон 'dc'
-    *> Заполнить вагон 'fc'
-    *> Задать маршрут 'r'
-    *> Статус поезда 's'
-    *> Если хотите выйти, пожалуйста, нажмите 'x'
+    *> Изменить скорость поезда - sp
+    *> Остановить поезд - st
+    *> Прицепить вагон - ac
+    *> Отцепить вагон - dc
+    *> Заполнить вагон - fc
+    *> Задать маршрут - r
+    *> Статус поезда - s
+    *> Если хотите выйти, пожалуйста, нажмите - x
 
   MENU_REMOTE_TRAIN
 
@@ -202,9 +203,9 @@ def remote_train
         train_route
       when 's'
         puts "#{@train.show_train_info}"
-        puts "#{@train.show_next_station}"
-        puts "#{@train.current_station}"
-        puts "#{@train.show_prev_station}"
+        unless @train.current_station.nil?
+          puts "#{@train.show_prev_station} #{@train.current_station} #{@train.show_next_station}"
+        end
       when 'x'
         main_menu
       else
@@ -238,38 +239,38 @@ def add_wagon
 end
 
 def fill_carriage
-  if @train.carriages.size != 0
+  if @train.carriages.size == 0
     puts 'Сначала прицепите вагоны'
     return
   end
 
   puts 'Выберите вагон'
   index = 0
-    if @train.type == :cargo
-      @train.show_carriage { |carriage| puts "#{index += 1} - вагон - объем: #{carriage.place}" }
-      cargo_choice = gets.chomp.to_i
-      if cargo_choice <= @train.carriages.size
-        puts 'Укажите объем, который хотите занять: '
-        volume = gets.chomp.to_i
-        @train.carriages[cargo_choice - 1].take_volume(volume)
-        @train.carriages[cargo_choice - 1].free_volume
-      else
-        puts 'Нет такого вагона'
-      end
-    elsif @train.type == :passenger
-      @train.show_carriage do |carriage|
-        puts "#{index += 1} - вагон - мест: #{carriage.place}"
-        puts "#{carriage.free_seats}"
-        puts
-      end
-      pass_choice = gets.chomp.to_i
-      if pass_choice <= @train.carriages.size
-        @train.carriages[pass_choice - 1].take_seat
-        @train.carriages[pass_choice - 1].free_seats
-      else
-        puts 'Нет такого вагона'
-      end
+  if @train.type == :cargo
+    @train.show_carriage { |carriage| puts "#{index += 1} - вагон - объем: #{carriage.place}" }
+    cargo_choice = gets.chomp.to_i
+    if cargo_choice <= @train.carriages.size
+      puts 'Укажите объем, который хотите занять: '
+      volume = gets.chomp.to_i
+      @train.carriages[cargo_choice - 1].take_volume(volume)
+      @train.carriages[cargo_choice - 1].free_volume
+    else
+      puts 'Нет такого вагона'
     end
+  elsif @train.type == :passenger
+    @train.show_carriage do |carriage|
+      puts "#{index += 1} - вагон - мест: #{carriage.place}"
+      puts "#{carriage.show_free_seats}"
+      puts
+    end
+    pass_choice = gets.chomp.to_i
+    if pass_choice <= @train.carriages.size
+      @train.carriages[pass_choice - 1].take_seat
+      @train.carriages[pass_choice - 1].free_seats
+    else
+      puts 'Нет такого вагона'
+    end
+  end
   remote_train
 end
 
@@ -295,11 +296,11 @@ def station_menu
                       --- Меню STATION ---
     _______________________________________________________________
 
-      *> Если вы хотите создать станцию, пожалуйста, нажмите 'c'
-      *> Если вы хотите удалить станцию, нажмите 'd'
-      *> Если вы хотите посмотреть все станции 'o'
-      *> Управление станцией 'm'
-      *> Если хотите выйти, пожалуйста, нажмите 'x'
+      *> Если вы хотите создать станцию, пожалуйста, нажмите - c
+      *> Если вы хотите удалить станцию, нажмите - d
+      *> Если вы хотите посмотреть все станции - o
+      *> Управление станцией - m
+      *> Если хотите выйти, пожалуйста, нажмите - x
   MENU_STATION
 
   puts menu_station
@@ -316,7 +317,7 @@ def station_menu
         end
         station.valid?
       rescue => e
-        puts "#{e}"
+        puts e.message
         retry
       end
       puts "Вы создали станцию - #{@stations.last.name}"
@@ -347,10 +348,10 @@ def remote_station
                Пульт управления станцией
      ----------------------------------------------
 
-    *> Если вы хотите поместить поезд на станцию, пожалуйста, нажмите 'a'
-    *> Посмотреть список поездов на станции, нажмите 'l'
-    *> Посмотреть список поездов на станции по типу, нажмите 'o'
-    *> Отправить поезд со станции 'd'
+    *> Если вы хотите поместить поезд на станцию, пожалуйста, нажмите - a
+    *> Посмотреть список поездов на станции, нажмите - l
+    *> Посмотреть список поездов на станции по типу, нажмите - o
+    *> Отправить поезд со станции - d
     *> Если хотите выйти, пожалуйста, нажмите 'x'
 
   MENU_REMOTE_STATION

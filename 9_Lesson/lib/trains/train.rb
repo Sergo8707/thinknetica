@@ -1,20 +1,28 @@
-require_relative 'company_name'
-require_relative 'instance_counter'
-require_relative 'validator'
+require_relative './modules/company_name'
+require_relative './modules/instance_counter'
+require_relative './modules/validation'
+require_relative './modules/accessors'
 
 class Train
   include CompanyName
   include InstanceCounter
-  include Validator
+  include Validation
+  extend Accessors
 
   attr_accessor :speed
   attr_reader :name, :type, :carriages, :number
 
-  NUMBER_FORMAT = /^([a-z]|\d){3}-?([a-z]{2}|\d{2})$/i
-
-  NAME_FORMAT = /\A[a-zа-яA-ZА-Я0-9_]+\z/
+  attr_accessor_with_history :a, :b
+  strong_attr_accessor(:thing, Integer)
 
   @@trains = {}
+
+  NUMBER_FORMAT = /^[а-я0-9]{3}.*[а-я0-9]{2}$/i
+
+  validate :number, :presence
+  validate :number, :format, NUMBER_FORMAT
+  validate :name, :presence
+  validate :type, :presence
 
   def self.find(number)
     @@trains[number]
@@ -40,11 +48,9 @@ class Train
   end
 
   def show_carriage
-    if !@carriages.empty?
+    unless @carriages.empty?
       puts 'Вагоны поезда:'
-      @carriages.each(&block)
-    else
-      puts 'У поезда нет вагонов'
+      @carriages.each { |carriage| yield(carriage) }
     end
   end
 
@@ -115,23 +121,9 @@ class Train
 
   protected
 
-  # доступ только из подкласов
   attr_writer :carriages
 
   def carriage_count
     puts "carriages: #{@carriages.size}"
-  end
-
-  def validate!
-    raise 'Имя поезда не должно быть пустим' if name.empty?
-    raise 'Номер поезда не может быть пустим' if number.nil?
-    raise 'Номер должнен быть длинее 5 символов' if number.to_s.length < 3
-    raise 'Имя должно быть длинее 6 символов' if name.to_s.length < 6
-    raise 'Номер не должнен быть длинее 6 символов' if number.to_s.length > 7
-    raise 'Номер не отвечает формату (XXX-XX)' if number !~ NUMBER_FORMAT
-    raise 'Имя не отвечает формату' if name !~ NAME_FORMAT
-    raise 'Тип поезда не может быть nil!' if type.nil?
-    raise 'Поезду не задан тип' if type != :cargo && type != :passenger
-    true
   end
 end

@@ -1,13 +1,15 @@
-require_relative 'trains/validator'
+require_relative 'trains/modules/validation'
 
 class Station
-  include Validator
-
-  STATION_FORMAT = /^[а-яa-zA-ЯA-Z0-9]/i
+  include Validation
 
   attr_reader :name, :trains
 
+  validate :name, :presence_check
+
   @@all_stations = []
+
+  validate :name, :presence
 
   def self.all
     @@all_stations
@@ -38,15 +40,5 @@ class Station
     else
       @trains.delete(train)
     end
-  end
-
-  private
-
-  def validate!
-    raise 'Название станции не может быть пустым!' if name.empty?
-    raise 'Название должно быть длинее 3 сим.' if name.to_s.length < 3
-    raise 'Название не должно быть длинее 16 сим.' if name.to_s.length > 16
-    raise 'Название станции не отвечает формату' if name !~ STATION_FORMAT
-    true
   end
 end

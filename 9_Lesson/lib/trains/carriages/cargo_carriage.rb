@@ -14,6 +14,10 @@ class CargoCarriage < Carriage
   end
 
   def free_volume
-    puts "Свободный объем: #{@total_volume - @volume_count}"
+    @total_volume - @volume_count
+  end
+
+  def show_free_volume
+    puts "Свободный объем: #{free_volume}"
   end
 end

@@ -14,6 +14,10 @@ class PassengerCarriage < Carriage
   end
 
   def free_seats
-    puts "свободных мест: #{@seats_total - @seats_count}"
+    @seats_total - @seats_count
+  end
+
+  def show_free_seats
+    puts "свободных мест: #{free_seats}"
   end
 end
