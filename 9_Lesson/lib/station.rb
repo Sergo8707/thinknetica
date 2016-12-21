@@ -5,7 +5,7 @@ class Station
 
   attr_reader :name, :trains
 
-  validate :name, :presence_check
+  validate :name, :presence
 
   @@all_stations = []
 
@@ -17,8 +17,8 @@ class Station
 
   def initialize(name)
     @name = name
-    @trains = []
     validate!
+    @trains = []
     @@all_stations << self
   end
 

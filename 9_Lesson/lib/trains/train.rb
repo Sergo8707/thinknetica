@@ -13,14 +13,15 @@ class Train
   attr_reader :name, :type, :carriages, :number
 
   attr_accessor_with_history :a, :b
-  strong_attr_accessor(:thing, Integer)
+  strong_attr_accessor(:thing, Fixnum)
 
   @@trains = {}
 
-  NUMBER_FORMAT = /^[а-я0-9]{3}.*[а-я0-9]{2}$/i
+  NUMBER_FORMAT = /^(\w{3})(-\w{2})?$/
+  TYPE_FORMAT = /^(cargo|passenger)$/i
 
-  validate :number, :presence
   validate :number, :format, NUMBER_FORMAT
+  validate :type, :format, TYPE_FORMAT
   validate :name, :presence
   validate :type, :presence
 

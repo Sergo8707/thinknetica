@@ -12,6 +12,7 @@ module Validation
   end
 
   module InstanceMethods
+
     def valid?
       validate!
       true
@@ -27,13 +28,14 @@ module Validation
         if check_array = our_class.class_eval('@check_array')
           check_array.each do |value|
             var = instance_variable_get("@#{value[:attribute]}")
-            method_checking = (value[:type]).to_s
+            method_checking = "#{value[:type]}"
             send method_checking, var, value[:option] if value[:option]
           end
         end
         our_class = our_class.superclass
       end
     end
+
 
     def presence(name)
       raise 'не может быть пустым' if name.nil? || name == ''

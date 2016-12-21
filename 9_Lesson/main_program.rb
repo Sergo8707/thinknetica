@@ -46,7 +46,6 @@ def route_menu
   puts '_______________________________________________________________'
   puts ''
   puts 'Введите начальную станцию'
-  begin
     @route_start = gets.chomp.to_s
     @stations << Station.new(@route_start)
     puts 'Введите конечную станцию'
@@ -54,14 +53,10 @@ def route_menu
     @stations << Station.new(@route_end)
 
     @routes << Route.new(@route_start, @route_end)
-
-  rescue => e
-    puts e.message
+  rescue StandardError => e
+    puts e.to_s
     retry
-  end
-
-  puts "Ваш маршрут: #{@routes.last.all_way.join(' -> ')}"
-
+    puts "Ваш маршрут: #{@routes.last.all_way.join(' -> ')}"
   add_st
 end
 
@@ -86,8 +81,8 @@ def add_st
         station = gets.chomp.to_s
         @stations << Station.new(station)
         @routes.last.add_station(station)
-      rescue => e
-        puts e.message
+      rescue StandardError => e
+        puts e.to_s
         retry
       end
       puts "Ваш маршрут: #{@routes.last.all_way.join(' -> ')}"
@@ -118,41 +113,29 @@ def train_menu
 
   puts menu_train
 
-  begin
+  puts 'Введите номер поезда'
 
-    puts 'Введите номер поезда'
+  number = gets.chomp.to_s
 
-    number = gets.chomp.to_s
+  puts 'Введите название поезда'
 
-    puts 'Введите название поезда'
+  name_train = gets.chomp.to_s
 
-    name_train = gets.chomp.to_s
+  puts 'Поезд будет 1-грузовой или 2-пассажирский ? (Введите 1 или 2)'
 
-    puts 'Поезд будет 1-грузовой или 2-пассажирский ? (Введите 1 или 2)'
+  type = gets.to_i
 
-    train_type = gets.to_i
-
-    case train_type
-      when 1
-        @trains << CargoTrain.new(number, name_train)
-
-      when 2
-        @trains << PassengerTrain.new(number, name_train)
-      else
-        puts 'Неверный тип поезда!'
-        menu_train
-    end
-
-  rescue => e
-    puts e.message
-    retry
+  if type == 1
+    @trains << CargoTrain.new(number, name_train)
+  else
+    @trains << PassengerTrain.new(number, name_train)
   end
-
   puts 'Вы создали поезд'
-
   puts @trains.last.show_train_info
-
   remote_train
+rescue StandardError => e
+  puts e.to_s
+  retry
 end
 
 def remote_train
@@ -177,7 +160,7 @@ def remote_train
   if @trains.size > 0
     puts 'Выберите поезд (цифрой)'
     index = 0
-    @trains.collect { |train| puts "#{index += 1})  #{train.name} - #{train.type}" }
+    @trains.collect { |train| puts "#{index += 1})  #{train.number} - #{train.type}" }
     choice = gets.chomp.to_i
     @train = @trains[choice - 1]
 
@@ -316,8 +299,8 @@ def station_menu
           @stations << Station.new(station)
         end
         station.valid?
-      rescue => e
-        puts e.message
+      rescue StandardError => e
+        puts e.to_s
         retry
       end
       puts "Вы создали станцию - #{@stations.last.name}"
