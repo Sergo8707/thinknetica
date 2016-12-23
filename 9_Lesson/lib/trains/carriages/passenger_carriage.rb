@@ -1,8 +1,8 @@
 class PassengerCarriage < Carriage
   def initialize(seats_total)
+    super('Пассажирский')
     @seats_total = seats_total.to_i
     @seats_count = 0
-    super
   end
 
   def take_seat

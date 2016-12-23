@@ -1,8 +1,8 @@
 class CargoCarriage < Carriage
   def initialize(total_volume)
+    super('Грузовой')
     @total_volume = total_volume.to_i
     @volume_count = 0
-    super
   end
 
   def take_volume(volume)

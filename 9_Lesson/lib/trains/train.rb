@@ -1,7 +1,7 @@
-require_relative './modules/company_name'
-require_relative './modules/instance_counter'
-require_relative './modules/validation'
-require_relative './modules/accessors'
+require_relative 'modules/company_name'
+require_relative 'modules/instance_counter'
+require_relative 'modules/validation'
+require_relative 'modules/accessors'
 
 class Train
   include CompanyName
@@ -12,32 +12,31 @@ class Train
   attr_accessor :speed
   attr_reader :name, :type, :carriages, :number
 
-  attr_accessor_with_history :a, :b
-  strong_attr_accessor(:thing, Fixnum)
-
   @@trains = {}
 
   NUMBER_FORMAT = /^(\w{3})(-\w{2})?$/
-  TYPE_FORMAT = /^(cargo|passenger)$/i
+  TYPE = { passenger: 'Пассажирский', cargo: 'Грузовой' }.freeze
+
 
   validate :number, :format, NUMBER_FORMAT
-  validate :type, :format, TYPE_FORMAT
-  validate :name, :presence
-  validate :type, :presence
 
   def self.find(number)
     @@trains[number]
   end
 
-  def initialize(number, name, type)
+  def initialize(number)
     @number = number
-    @name = name
     @type = type
+    @name = name
+    validate!
     @speed = 0
     @carriages = []
-    validate!
     @@trains[number] = self
     register_instance
+  end
+
+  def type_text
+    TYPE[@type]
   end
 
   def stop
@@ -117,7 +116,7 @@ class Train
   end
 
   def show_train_info
-    puts "номер - #{@number}; имя - #{@name}; тип - #{@type}; вагонов: #{@carriages.size}"
+    puts "номер - #{@number}; тип - #{@type}; вагонов: #{@carriages.size}"
   end
 
   protected

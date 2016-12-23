@@ -5,48 +5,46 @@ module Validation
   end
 
   module ClassMethods
-    def validate(attribute, type, option = nil)
-      @check_array ||= []
-      @check_array << { attribute: attribute, type: type, option: option }
+    attr_reader :check
+
+    def validate(*arg)
+      arg ||= []
+      self.check ||= []
+      self.check << arg
     end
+
+    private
+
+    attr_writer :check
   end
 
   module InstanceMethods
+    def validate!
+      self.class.check.each do |value|
+        v = instance_variable_get("@#{value[0]}".to_sym)
+        send value[1].to_sym, v, value[2]
+      end
+    end
 
     def valid?
       validate!
       true
-    rescue StandardError
+    rescue
       false
     end
 
     private
 
-    def validate!
-      our_class = self.class
-      while our_class != Object
-        if check_array = our_class.class_eval('@check_array')
-          check_array.each do |value|
-            var = instance_variable_get("@#{value[:attribute]}")
-            method_checking = "#{value[:type]}"
-            send method_checking, var, value[:option] if value[:option]
-          end
-        end
-        our_class = our_class.superclass
-      end
+    def presence(value, _options)
+      raise 'Ошибка: Значение не может быть пустым!' if value.empty?
     end
 
-
-    def presence(name)
-      raise 'не может быть пустым' if name.nil? || name == ''
+    def format(value, options)
+      raise 'Ошибка: Не верный формат вводимых значений!' if value !~ options
     end
 
-    def format(name, format)
-      raise 'неверный формат' unless name =~ format
-    end
-
-    def type(name, type)
-      raise 'неверный тип' unless name.is_a?(type)
+    def type(value, options)
+      raise 'Ошибка: Не верный тип данных!' if value.is_a?(options)
     end
   end
 end

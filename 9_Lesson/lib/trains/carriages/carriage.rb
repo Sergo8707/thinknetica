@@ -3,10 +3,11 @@ require_relative '../modules/company_name'
 class Carriage
   include CompanyName
 
-  attr_reader :place
+  attr_reader :place, :type
 
-  def initialize(place)
+  def initialize(place, type)
     @place = place
+    @type = type
   end
 
   def carriage_type
